@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conciliación Financiera</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            display: flex; /* Cambiado a flex para centrar mejor */
+            flex-direction: column; /* Alinear elementos verticalmente */
+            align-items: center; /* Centrar horizontalmente */
+            min-height: 95vh;
+            background-color: #ffffff;
+            color: #333;
+            margin: 20px; /* Añadir margen alrededor */
+        }
+        .container {
+            width: 90%;
+            max-width: 500px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid #e0e0e0; /* Borde sutil */
+            border-radius: 8px;
+            margin-bottom: 2rem; /* Espacio debajo del contenedor principal */
+        }
+        h2 {
+            color: #000;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+        }
+        p {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 2rem;
+        }
+        .input-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #333;
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 1.5rem 1rem;
+            border: 2px dashed #d1d5da;
+            border-radius: 8px;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        input[type="file"]:hover {
+            background-color: #f3f3f3;
+            border-color: #007bff;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        button:hover {
+            background-color: #22863a;
+        }
+        button:disabled {
+            background-color: #94d3a2;
+            cursor: not-allowed;
+        }
+        #mensaje {
+            margin-top: 1.5rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #mensaje.error {
+            color: #d73a49;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+        #mensaje.success {
+            color: #004085;
+            background-color: #cce5ff;
+            border: 1px solid #b8daff;
+        }
+        #mensaje.processing { /* Nuevo estilo para "Procesando" */
+             color: #856404;
+             background-color: #fff3cd;
+             border: 1px solid #ffeeba;
+        }
+
+        /* --- Estilos para el Dashboard --- */
+        #dashboardResultado {
+            display: none; /* Oculto por defecto */
+            width: 90%;
+            max-width: 600px; /* Más ancho para la tabla */
+            margin-top: 2rem;
+            text-align: left;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            background-color: #f9f9f9;
+        }
+        #dashboardResultado h3 {
+            margin-top: 0;
+            text-align: center;
+            color: #0366d6;
+        }
+        #dashboardTabla {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+        #dashboardTabla th, #dashboardTabla td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        #dashboardTabla th {
+            background-color: #f2f2f2;
+            font-weight: 600;
+        }
+        #dashboardTabla tr:nth-child(even){background-color: #f9f9f9;}
+        #dashboardTabla tr:hover {background-color: #ddd;}
+        #consejoIA {
+            margin-top: 1rem;
+            padding: 10px;
+            background-color: #e6f7ff;
+            border: 1px solid #91d5ff;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        #consejoIA strong {
+             display: block;
+             margin-bottom: 5px;
+             color: #0050b3;
+        }
+        #downloadBtn { /* Estilo para el botón de descarga */
+            background-color: #007bff;
+            display: inline-block; /* Para que funcione el text-align center */
+            width: auto; /* Ancho automático */
+            padding: 0.8rem 2rem;
+            margin-top: 1rem;
+            text-decoration: none; /* Quitar subrayado si se usa <a> */
+            color: white; /* Color de texto blanco */
+            border-radius: 6px; /* Bordes redondeados */
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+         #downloadBtn:hover {
+             background-color: #0056b3;
+         }
+         .center-button { /* Contenedor para centrar botón */
+             text-align: center;
+         }
+        /* --- FIN Estilos Dashboard --- */
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Herramienta de Conciliación</h2>
+        <p>Carga los archivos CFDI y Auxiliar Contable.</p>
+
+        <form id="uploadForm">
+            <div class="input-group">
+                <label for="cfdiInput">1. Archivo CFDI (.xlsx)</label>
+                <input type="file" id="cfdiInput" name="archivo_cfdi" accept=".xlsx" required>
+            </div>
+            <div class="input-group">
+                <label for="auxInput">2. Archivo Auxiliar (.xlsx)</label>
+                <input type="file" id="auxInput" name="archivo_aux" accept=".xlsx" required>
+            </div>
+            <button type="submit" id="procesarBtn">Procesar Archivos</button>
+        </form>
+
+        <div id="mensaje"></div>
+    </div>
+
+    <!-- --- Sección para mostrar el Dashboard --- -->
+    <div id="dashboardResultado">
+        <h3>Resumen de Conciliación</h3>
+        <table id="dashboardTabla">
+            <thead>
+                <tr>
+                    <!-- MODIFICACIÓN: Cambiado el título de la columna -->
+                    <th>Fiabilidad / Paso</th>
+                    <th>Coincidencias</th>
+                    <!-- FIN MODIFICACIÓN -->
+                </tr>
+            </thead>
+            <tbody id="dashboardBody">
+                <!-- Las filas se llenarán con JavaScript -->
+            </tbody>
+        </table>
+        <div id="consejoIA">
+            <strong>Consejo de la IA:</strong>
+            <span id="consejoTexto"></span>
+        </div>
+        <div class="center-button">
+             <!-- El botón de descarga se creará aquí con JavaScript -->
+             <a id="downloadBtn" href="#" style="display: none;">Descargar Excel</a>
+        </div>
+    </div>
+    <!-- --- FIN Sección Dashboard --- -->
+
+
+    <script>
+        const form = document.getElementById('uploadForm');
+        const cfdiInput = document.getElementById('cfdiInput');
+        const auxInput = document.getElementById('auxInput');
+        const procesarBtn = document.getElementById('procesarBtn');
+        const mensaje = document.getElementById('mensaje');
+        // --- Referencias a elementos del dashboard ---
+        const dashboardDiv = document.getElementById('dashboardResultado');
+        const dashboardBody = document.getElementById('dashboardBody');
+        const consejoTexto = document.getElementById('consejoTexto');
+        const downloadBtn = document.getElementById('downloadBtn');
+        // --- FIN Referencias ---
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (cfdiInput.files.length === 0 || auxInput.files.length === 0) {
+                mostrarMensaje('Por favor, selecciona AMBOS archivos.', 'error');
+                return;
+            }
+
+            // --- Ocultar dashboard anterior al procesar ---
+            dashboardDiv.style.display = 'none';
+            downloadBtn.style.display = 'none'; // Ocultar botón de descarga
+            // --- FIN Ocultar ---
+
+            const formData = new FormData();
+            formData.append('archivo_cfdi', cfdiInput.files[0]);
+            formData.append('archivo_aux', auxInput.files[0]);
+
+            procesarBtn.disabled = true;
+            // --- Usar clase 'processing' ---
+            mostrarMensaje('Procesando... Esto puede tardar unos segundos.', 'processing');
+             // --- FIN Clase ---
+
+            try {
+                const response = await fetch('/procesar', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                // --- Esperar JSON ---
+                const resultado = await response.json();
+
+                if (response.ok) {
+                    // --- ÉXITO ---
+                    mostrarMensaje(resultado.message, 'success'); // Mensaje de éxito del JSON
+                    // Mostrar Dashboard
+                    mostrarDashboard(resultado.dashboard, resultado.consejo);
+                    // Configurar botón de descarga
+                    if (resultado.downloadFile) {
+                        downloadBtn.href = `/descargar/${resultado.downloadFile}`;
+                        // Extraer nombre base para el atributo download (opcional pero mejora la experiencia)
+                        try {
+                           const nombreBase = resultado.downloadFile.split('_').slice(1).join('_');
+                           downloadBtn.download = nombreBase || 'conciliacion.xlsx'; // Nombre que verá el usuario
+                        } catch {
+                           downloadBtn.download = 'conciliacion.xlsx';
+                        }
+                        downloadBtn.style.display = 'inline-block'; // Mostrar botón
+                    } else {
+                        console.error("No se recibió 'downloadFile' en la respuesta JSON.")
+                        downloadBtn.style.display = 'none';
+                    }
+
+
+                } else {
+                    // --- ERROR ---
+                    mostrarMensaje(`Error: ${resultado.error || 'Error desconocido'}`, 'error');
+                    // Mostrar dashboard parcial si vino en el error
+                    if (resultado.dashboard) {
+                        mostrarDashboard(resultado.dashboard, `Error: ${resultado.error || 'Error durante el proceso.'}`);
+                    }
+                     downloadBtn.style.display = 'none'; // Asegurarse que el botón esté oculto en error
+                }
+                // --- FIN Esperar JSON ---
+
+            } catch (error) {
+                console.error('Error de red o JSON:', error);
+                mostrarMensaje('Error de red o respuesta inválida del servidor.', 'error');
+                 downloadBtn.style.display = 'none'; // Ocultar botón en error de red
+            } finally {
+                procesarBtn.disabled = false;
+            }
+        });
+
+        function mostrarMensaje(texto, tipo) {
+            mensaje.textContent = texto;
+            mensaje.className = tipo;
+        }
+
+        // --- Nueva función para mostrar el dashboard ---
+        function mostrarDashboard(data, consejo) {
+            // Validar que 'data' sea un array
+            if (!data || !Array.isArray(data)) {
+                 console.error("Datos del dashboard inválidos o no es un array:", data);
+                 dashboardBody.innerHTML = '<tr><td colspan="2">No se pudo cargar el resumen.</td></tr>';
+                 consejoTexto.textContent = consejo || "No disponible.";
+                 dashboardDiv.style.display = 'block'; // Mostrar aunque esté vacío
+                 return; // Salir si los datos no son válidos
+            };
+
+            // Limpiar tabla anterior
+            dashboardBody.innerHTML = '';
+
+            // --- INICIO DE MODIFICACIÓN: Mapeo de Pasos a Fiabilidad ---
+            // Este objeto traducirá los textos que vienen del back-end
+            const mapeoFiabilidad = {
+                "Pase 1 (UUID)": "100% (UUID)",
+                "Pase 2 (Folio Exacto+Monto)": "98% (Folio Exacto)",
+                "Pase 3 (Folio Parcial+Monto)": "95% (Folio Parcial)",
+                "Pase 4 (Monto+Fecha 5d)": "85% (Monto + 5 días)",
+                "Pase 5 (Monto+Fecha 30d)": "80% (Monto + 30 días)",
+                "Pase 6 (Monto Solo)": "75% (Monto Solo)",
+                "Pase 7 (Monto Próximo)": "70% (Monto Próximo)",
+                "Pase 8 (IA)": "IA (Predicción)",
+                "---": "---",
+                "TOTAL CFDI CARGADOS": "Datos de Entrada",
+                "TOTAL AUX CARGADOS (Relevantes)": "Datos de Entrada",
+                "TOTAL CONCILIADO": "Resultado Final",
+                "SOBRANTES CFDI": "Resultado Final",
+                "SOBRANTES AUX": "Resultado Final"
+            };
+            // --- FIN DE MODIFICACIÓN ---
+
+            // Llenar tabla
+            data.forEach(item => {
+                 // Validar que 'item' sea un objeto y tenga las propiedades esperadas
+                if (typeof item !== 'object' || item === null || typeof item.Paso === 'undefined' || typeof item.Coincidencias === 'undefined') {
+                    console.warn("Item inválido en datos del dashboard:", item);
+                    return; // Saltar este item si no tiene el formato esperado
+                }
+
+                const row = dashboardBody.insertRow();
+                const cellPaso = row.insertCell();
+                const cellCoincidencias = row.insertCell();
+
+                // --- INICIO DE MODIFICACIÓN: Aplicar Mapeo ---
+                // Usar el mapeo. Si no se encuentra, usar el texto original.
+                cellPaso.textContent = mapeoFiabilidad[item.Paso] || item.Paso;
+                cellCoincidencias.textContent = item.Coincidencias;
+                // --- FIN DE MODIFICACIÓN ---
+
+                 // Añadir estilo separador si es '---'
+                if (item.Paso === '---') {
+                    row.style.fontWeight = 'bold';
+                    row.style.backgroundColor = '#e9ecef'; // Gris más claro
+                    cellPaso.style.textAlign = 'center';
+                    cellCoincidencias.style.textAlign = 'center';
+                }
+                 // Resaltar totales y sobrantes
+                 if (["TOTAL CONCILIADO", "SOBRANTES CFDI", "SOBRANTES AUX"].includes(item.Paso)){
+                     row.style.fontWeight = 'bold';
+                 }
+            });
+
+            // Mostrar consejo
+            consejoTexto.textContent = consejo || "No se generó consejo.";
+
+            // Mostrar el div del dashboard
+            dashboardDiv.style.display = 'block';
+        }
+        // --- FIN Nueva función ---
+
+    </script>
+
+</body>
+</html>
