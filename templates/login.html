@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso - Conciliación</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            display: grid;
+            place-items: center;
+            min-height: 90vh;
+            background-color: #f6f8fa;
+            color: #24292e;
+            margin: 0;
+        }
+        .container {
+            width: 90%;
+            max-width: 340px;
+            background: #ffffff;
+            padding: 2rem 2.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e1e4e8;
+            text-align: center;
+        }
+        h2 {
+            margin-top: 0;
+            font-weight: 600;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #d1d5da;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            background-color: #28a745;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #22863a;
+        }
+        .flash-message {
+            padding: 1rem;
+            margin-top: 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        .flash-message.error {
+            background-color: #ffeef0;
+            color: #d73a49;
+            border: 1px solid #ffdce0;
+        }
+        .flash-message.success {
+            background-color: #f0f8ff;
+            color: #0366d6;
+            border: 1px solid #d1e7fd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Acceso Seguro</h2>
+        <form method="POST">
+            <div class="form-group">
+                <label for="pin">Ingresa el PIN:</label>
+                <!-- Usar type="password" oculta el PIN mientras se escribe -->
+                <input type="password" id="pin" name="pin" required>
+            </div>
+            <button type="submit">Entrar</button>
+        </form>
+
+        <!-- Sección para mostrar mensajes (PIN incorrecto, Logout exitoso) -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+</body>
+</html>
