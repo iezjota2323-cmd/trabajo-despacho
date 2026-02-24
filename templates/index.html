@@ -265,9 +265,10 @@
 
     <div class="main-container">
         <div class="tabs-container">
-            <a href="/?tab=conciliador" class="tab-btn {% if tab != 'auditoria' %}active{% endif %}">🤖 Conciliador
-                IA</a>
-            <a href="/?tab=auditoria" class="tab-btn {% if tab == 'auditoria' %}active{% endif %}">📑 Auditoría GSM</a>
+            <a href="/herramientas?tab=conciliador" class="tab-btn {% if tab != 'auditoria' %}active{% endif %}">🤖
+                Conciliación IA</a>
+            <a href="/herramientas?tab=auditoria" class="tab-btn {% if tab == 'auditoria' %}active{% endif %}">📑
+                Conciliación IVA</a>
         </div>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -280,8 +281,8 @@
 
         <div class="tab-content">
             {% if tab != 'auditoria' %}
-            <h2>Herramienta de Conciliación</h2>
-            <p>Carga los archivos CFDI, Auxiliar Contable y PDFs.</p>
+            <h2>Conciliación IA</h2>
+            <p>Busca montos Debe/Haber del Auxiliar en la columna IVA del Fiscal.</p>
             <form action="/procesar" method="POST" enctype="multipart/form-data">
                 <div class="input-group">
                     <label>1. Archivo CFDI (.xlsx)</label>
@@ -322,19 +323,28 @@
             {% endif %}
 
             {% else %}
-            <h2>Auditoría GSM</h2>
-            <p>Subrayado automático de PDFs para Auditoría.</p>
+            <h2>Conciliación IVA</h2>
+            <p>Cruza IVA fiscal vs contable y certifica TOTALES en PDFs.</p>
             <form action="/procesar_auditoria" method="POST" enctype="multipart/form-data">
                 <div class="input-group">
-                    <label>1. Excel GSM Unificado (.xlsx)</label>
-                    <input type="file" name="archivo_excel" accept=".xlsx" required>
+                    <label>1. Archivo CFDI Fiscal (.xlsx)</label>
+                    <input type="file" name="archivo_cfdi_iva" accept=".xlsx" required>
                 </div>
                 <div class="input-group">
-                    <label>2. Estados de Cuenta (.zip con PDFs)</label>
-                    <input type="file" name="archivo_pdf" accept=".zip" required>
+                    <label>2. Archivo Auxiliar (.xlsx)</label>
+                    <input type="file" name="archivo_aux_iva" accept=".xlsx" required>
                 </div>
-                <button class="submit-btn" type="submit">Ejecutar Auditoría</button>
+                <div class="input-group">
+                    <label>3. Estados de Cuenta (.zip con PDFs)</label>
+                    <input type="file" name="archivo_pdf_iva" accept=".zip" required>
+                </div>
+                <button class="submit-btn" type="submit">Ejecutar Conciliación IVA</button>
             </form>
+
+            {% if success_auditoria %}
+            <div class="flash-message success">{{ success_auditoria }}</div>
+            {% endif %}
+
             {% if downloadFileAuditoria %}
             <a class="downloadBtn" href="/descargar/{{ downloadFileAuditoria }}">⬇️ Descargar Entregables (.ZIP)</a>
             {% endif %}

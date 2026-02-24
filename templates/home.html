@@ -62,6 +62,7 @@
             margin-bottom: 1rem;
             background: linear-gradient(to right, #4f46e5, #9333ea);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
@@ -137,27 +138,28 @@
 
     <div class="container">
         <h1>Bienvenido a tu Suite</h1>
-        <p class="subtitle">Selecciona la herramienta que deseas utilizar el día de hoy para comenzar tu proceso
-            contable o de auditoría.</p>
+        <p class="subtitle">Selecciona la herramienta que deseas utilizar el día de hoy para tu gestión financiera.</p>
 
         <div class="menu-grid">
             <a href="/herramientas?tab=conciliador" class="menu-card">
                 <div class="icon">🤖</div>
-                <h2>Conciliador IA</h2>
-                <p>Cruce inteligente entre CFDI y Auxiliares Contables con detección de pases automáticos.</p>
+                <h2>Conciliación IA</h2>
+                <p>Busca montos Debe/Haber del Auxiliar dentro de la columna IVA de los CFDI utilizando reconocimiento
+                    inteligente.</p>
             </a>
 
             <a href="/herramientas?tab=auditoria" class="menu-card">
                 <div class="icon">📑</div>
-                <h2>Auditoría GSM</h2>
-                <p>Procesamiento masivo de estados de cuenta PDF con subrayado y reporte de auditoría.</p>
+                <h2>Conciliación IVA</h2>
+                <p>Cruce de IVA fiscal vs contable, integración de datos y validación de TOTALES en estados de cuenta
+                    PDF.</p>
             </a>
 
             {% if current_user.role == 'superadmin' %}
             <a href="/admin" class="menu-card" style="grid-column: span 1 / -1;">
                 <div class="icon">⚙️</div>
                 <h2>Panel Administrativo</h2>
-                <p>Configuración de usuarios, aprobación de accesos y monitoreo de actividad en tiempo real.</p>
+                <p>Gestión de usuarios y monitoreo de actividad.</p>
             </a>
             {% endif %}
         </div>
