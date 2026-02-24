@@ -13,8 +13,8 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
 # --- IMPORTAMOS TUS MÓDULOS OPTIMIZADOS ---
-from modulo_auditoria import ejecutar_auditoria
-from modulo_conciliacion import ejecutar_conciliacion, generar_resumen_ia
+from modules.modulo_auditoria import ejecutar_auditoria
+from modules.modulo_conciliacion import ejecutar_conciliacion, generar_resumen_ia
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'clave-secreta-muy-aleatoria-para-proteger-sesiones-12345'

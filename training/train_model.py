@@ -7,7 +7,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
 
 ARCHIVO_DATOS = 'entrenamiento.csv'
-MODELO_SALIDA = 'modelo_conciliacion.pkl'
+MODELO_SALIDA = '../models/modelo_conciliacion.pkl'
 
 # Features utilizadas por la IA para predecir si es un "match"
 FEATURES = ['diferencia_monto', 'diferencia_dias', 'similitud_folio', 'similitud_razon_social', 'es_mismo_monto']
