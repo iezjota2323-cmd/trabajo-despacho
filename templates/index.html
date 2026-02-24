@@ -1,95 +1,309 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suite Financiera y de Auditoría</title>
+    <title>Suite Financiera | Paniagua Palacios</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 95vh; background-color: #f4f6f8; color: #333; margin: 0; padding-top: 40px;}
-        
-        /* TABS O PESTAÑAS */
-        .tabs-container { display: flex; width: 90%; max-width: 600px; margin-bottom: 20px; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #e0e0e0; }
-        .tab-btn { flex: 1; padding: 15px; text-align: center; font-weight: 600; color: #555; text-decoration: none; border: none; background: #f9f9f9; font-size: 1rem; transition: all 0.3s ease; border-bottom: 3px solid transparent;}
-        .tab-btn:hover { background: #f0f0f0; color: #007bff; }
-        .tab-btn.active { background: #fff; color: #007bff; border-bottom: 3px solid #007bff; }
-        
-        /* CONTENEDOR PRINCIPAL */
-        .tab-content { width: 90%; max-width: 500px; background: white; padding: 2rem; text-align: center; border: 1px solid #e0e0e0; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        :root {
+            --primary: #6366f1;
+            --secondary: #64748b;
+            --bg: #f8fafc;
+            --white: #ffffff;
+            --success: #22c55e;
+        }
 
-        h2 { color: #000; font-weight: 600; margin-top: 0; margin-bottom: 0.5rem; }
-        p { font-size: 0.95rem; color: #555; margin-bottom: 2rem; }
-        
-        /* FORMULARIOS */
-        .input-group { margin-bottom: 1.5rem; text-align: left; }
-        .input-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; color: #333; }
-        input[type="file"] { width: 100%; padding: 1.5rem 1rem; border: 2px dashed #d1d5da; border-radius: 8px; box-sizing: border-box; background-color: #f9f9f9; cursor: pointer; transition: 0.2s; }
-        input[type="file"]:hover { background-color: #f3f3f3; border-color: #007bff; }
-        button.submit-btn { background-color: #28a745; color: white; padding: 1rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 600; width: 100%; margin-top: 0.5rem; transition: 0.2s;}
-        button.submit-btn:hover { background-color: #22863a; }
-        
-        /* MENSAJES Y RESULTADOS */
-        .flash-message { padding: 12px; border-radius: 6px; margin-bottom: 1.5rem; font-weight: 600; font-size: 0.95rem; }
-        .error { color: #d73a49; background-color: #f8d7da; border: 1px solid #f5c6cb; }
-        .success { color: #004085; background-color: #cce5ff; border: 1px solid #b8daff; }
-        .downloadBtn { background-color: #007bff; display: inline-block; padding: 0.8rem 2rem; margin-top: 1.5rem; text-decoration: none; color: white; border-radius: 6px; font-weight: 600; transition: 0.2s; }
-        .downloadBtn:hover { background-color: #0056b3; }
-        
-        /* TABLA DE DASHBOARD */
-        .dashboardTabla { width: 100%; border-collapse: collapse; margin-top: 1rem; margin-bottom: 1.5rem; }
-        .dashboardTabla th, .dashboardTabla td { border: 1px solid #e0e0e0; padding: 10px; text-align: left; font-size: 0.95rem;}
-        .dashboardTabla th { background-color: #f8f9fa; font-weight: 600; color: #333;}
-        .consejoIA { margin-top: 1rem; padding: 15px; background-color: #f0f8ff; border: 1px solid #cce5ff; border-radius: 6px; font-size: 0.9rem; text-align: left; line-height: 1.5;}
-        .consejoIA strong { color: #0056b3; display: block; margin-bottom: 5px; font-size: 1rem;}
-        
-        .logout-link { margin-top: 2rem; color: #6a737d; text-decoration: none; font-size: 0.9rem; font-weight: 500; }
-        .logout-link:hover { color: #d73a49; text-decoration: underline; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: #1e293b;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Navbar Mejorado */
+        nav {
+            background: var(--white);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .badge {
+            background: #e0e7ff;
+            color: var(--primary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: 0.2s;
+        }
+
+        .btn-outline {
+            border: 1px solid #e2e8f0;
+            color: var(--secondary);
+        }
+
+        .btn-outline:hover {
+            background: #f1f5f9;
+        }
+
+        .btn-danger {
+            color: #ef4444;
+        }
+
+        /* Contenido */
+        .main-container {
+            flex: 1;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .tabs-container {
+            display: flex;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 2rem;
+            background: #fff;
+            border-radius: 12px;
+            padding: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.75rem;
+            text-align: center;
+            font-weight: 600;
+            color: var(--secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tab-content {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        h2 {
+            margin-top: 0;
+            font-weight: 700;
+        }
+
+        p {
+            color: var(--secondary);
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 1rem;
+            border: 2px dashed #e2e8f0;
+            border-radius: 12px;
+            cursor: pointer;
+            background: #fcfcfd;
+            font-family: inherit;
+        }
+
+        input[type="file"]:hover {
+            border-color: var(--primary);
+            background: #f8fafc;
+        }
+
+        .submit-btn {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            width: 100%;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .submit-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .flash-message {
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .success {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbfcce;
+        }
+
+        .downloadBtn {
+            background: #0f172a;
+            color: white;
+            display: block;
+            padding: 1rem;
+            margin-top: 2rem;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 700;
+        }
+
+        .dashboardTabla {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+        }
+
+        .dashboardTabla th {
+            text-align: left;
+            padding: 0.75rem;
+            font-size: 0.75rem;
+            color: var(--secondary);
+            text-transform: uppercase;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .dashboardTabla td {
+            padding: 1rem 0.75rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .consejoIA {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: #f5f3ff;
+            border: 1px solid #ddd6fe;
+            border-radius: 12px;
+            color: #4338ca;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
     </style>
 </head>
+
 <body>
 
-    <div class="tabs-container">
-        <a href="/?tab=conciliador" class="tab-btn {% if tab != 'auditoria' %}active{% endif %}">🤖 Conciliador IA</a>
-        <a href="/?tab=auditoria" class="tab-btn {% if tab == 'auditoria' %}active{% endif %}">📑 Auditoría GSM</a>
-    </div>
+    <nav>
+        <div class="logo">Paniagua Palacios</div>
+        <div class="user-info">
+            {% if current_user.role == 'superadmin' %}
+            <a href="/admin" class="btn btn-outline" style="border-color: var(--primary); color: var(--primary);">⚙️
+                Panel Admin</a>
+            {% endif %}
+            <span class="user-name">{{ current_user.username }}</span>
+            <span class="badge">{{ current_user.role | upper }}</span>
+            <a href="/logout" class="btn btn-danger">Cerrar Sesión</a>
+        </div>
+    </nav>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
+    <div class="main-container">
+        <div class="tabs-container">
+            <a href="/?tab=conciliador" class="tab-btn {% if tab != 'auditoria' %}active{% endif %}">🤖 Conciliador
+                IA</a>
+            <a href="/?tab=auditoria" class="tab-btn {% if tab == 'auditoria' %}active{% endif %}">📑 Auditoría GSM</a>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-            {% for category, message in messages %}
-                <div class="flash-message {{ category }}">{{ message }}</div>
-            {% endfor %}
+        {% for category, message in messages %}
+        <div class="flash-message {{ category }}">{{ message }}</div>
+        {% endfor %}
         {% endif %}
-    {% endwith %}
+        {% endwith %}
 
-    {% if tab != 'auditoria' %}
-    <div id="conciliador" class="tab-content">
-        <h2>Herramienta de Conciliación</h2>
-        <p>Carga los archivos CFDI, Auxiliar Contable y los PDFs.</p>
+        <div class="tab-content">
+            {% if tab != 'auditoria' %}
+            <h2>Herramienta de Conciliación</h2>
+            <p>Carga los archivos CFDI, Auxiliar Contable y PDFs.</p>
+            <form action="/procesar" method="POST" enctype="multipart/form-data">
+                <div class="input-group">
+                    <label>1. Archivo CFDI (.xlsx)</label>
+                    <input type="file" name="archivo_cfdi" accept=".xlsx" required>
+                </div>
+                <div class="input-group">
+                    <label>2. Archivo Auxiliar (.xlsx)</label>
+                    <input type="file" name="archivo_aux" accept=".xlsx" required>
+                </div>
+                <div class="input-group">
+                    <label>3. Estados de Cuenta (.zip con PDFs)</label>
+                    <input type="file" name="archivo_pdf" accept=".zip" required>
+                </div>
+                <button class="submit-btn" type="submit">Ejecutar Análisis</button>
+            </form>
 
-        {% if success %}
-            <div class="flash-message success">{{ success }}</div>
-        {% endif %}
-
-        <form action="/procesar" method="POST" enctype="multipart/form-data">
-            <div class="input-group">
-                <label>1. Archivo CFDI (.xlsx)</label>
-                <input type="file" name="archivo_cfdi" accept=".xlsx" required>
-            </div>
-            <div class="input-group">
-                <label>2. Archivo Auxiliar (.xlsx)</label>
-                <input type="file" name="archivo_aux" accept=".xlsx" required>
-            </div>
-            <div class="input-group">
-                <label>3. Estados de Cuenta (.zip con PDFs)</label>
-                <input type="file" name="archivo_pdf" accept=".zip" required>
-            </div>
-            <button class="submit-btn" type="submit">Procesar Archivos</button>
-        </form>
-
-        {% if dashboard %}
-            <h3 style="margin-top:30px; color:#0366d6; font-weight: 600;">Resumen de Conciliación</h3>
+            {% if dashboard %}
             <table class="dashboardTabla">
                 <thead>
-                    <tr><th>Fiabilidad / Paso</th><th>Coincidencias</th></tr>
+                    <tr>
+                        <th>Fase de Proceso</th>
+                        <th>Coincidencias</th>
+                    </tr>
                 </thead>
                 <tbody>
                     {% for item in dashboard %}
@@ -100,47 +314,33 @@
                     {% endfor %}
                 </tbody>
             </table>
-            
-            <div class="consejoIA">
-                <strong>💡 Resumen Analítico:</strong>
-                {{ consejo }}
-            </div>
-            
+            <div class="consejoIA"><strong>💡 Resumen Analítico:</strong><br>{{ consejo }}</div>
             {% if downloadFile %}
-                 <a class="downloadBtn" href="/descargar/{{ downloadFile }}">⬇️ Descargar Reporte y PDFs (.ZIP)</a>
+            <a class="downloadBtn" href="/descargar/{{ downloadFile }}">⬇️ Descargar Reporte (.ZIP)</a>
             {% endif %}
-        {% endif %}
+            {% endif %}
+
+            {% else %}
+            <h2>Auditoría GSM</h2>
+            <p>Subrayado automático de PDFs para Auditoría.</p>
+            <form action="/procesar_auditoria" method="POST" enctype="multipart/form-data">
+                <div class="input-group">
+                    <label>1. Excel GSM Unificado (.xlsx)</label>
+                    <input type="file" name="archivo_excel" accept=".xlsx" required>
+                </div>
+                <div class="input-group">
+                    <label>2. Estados de Cuenta (.zip con PDFs)</label>
+                    <input type="file" name="archivo_pdf" accept=".zip" required>
+                </div>
+                <button class="submit-btn" type="submit">Ejecutar Auditoría</button>
+            </form>
+            {% if downloadFileAuditoria %}
+            <a class="downloadBtn" href="/descargar/{{ downloadFileAuditoria }}">⬇️ Descargar Entregables (.ZIP)</a>
+            {% endif %}
+            {% endif %}
+        </div>
     </div>
-    {% endif %}
-
-    {% if tab == 'auditoria' %}
-    <div id="auditoria" class="tab-content">
-        <h2>Auditoría GSM</h2>
-        <p>Carga el Auxiliar unificado y el ZIP de estados de cuenta para rayar PDFs automáticamente.</p>
-
-        {% if success_auditoria %}
-            <div class="flash-message success">{{ success_auditoria }}</div>
-        {% endif %}
-
-        <form action="/procesar_auditoria" method="POST" enctype="multipart/form-data">
-            <div class="input-group">
-                <label>1. Excel GSM Unificado (.xlsx)</label>
-                <input type="file" name="archivo_excel" accept=".xlsx" required>
-            </div>
-            <div class="input-group">
-                <label>2. Estados de Cuenta (.zip con PDFs)</label>
-                <input type="file" name="archivo_pdf" accept=".zip" required>
-            </div>
-            <button class="submit-btn" type="submit">Ejecutar Auditoría</button>
-        </form>
-
-        {% if downloadFileAuditoria %}
-             <a class="downloadBtn" href="/descargar/{{ downloadFileAuditoria }}">⬇️ Descargar Entregables (.ZIP)</a>
-        {% endif %}
-    </div>
-    {% endif %}
-
-    <a href="/logout" class="logout-link">Cerrar Sesión</a>
 
 </body>
+
 </html>

@@ -11,74 +11,201 @@ from flask import (
 )
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import (
+    LoginManager, UserMixin, login_user, login_required, 
+    logout_user, current_user
+)
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # --- IMPORTAMOS TUS MÓDULOS OPTIMIZADOS ---
 from modules.modulo_auditoria import ejecutar_auditoria
 from modules.modulo_conciliacion import ejecutar_conciliacion, generar_resumen_ia
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'clave-secreta-muy-aleatoria-para-proteger-sesiones-12345'
-PIN_SECRETO = '190805'
+app.config['SECRET_KEY'] = 'clave-secreta-paniagua-palacios-2024'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///suite_financiera.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+
+# --- MODELOS ---
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
+    role = db.Column(db.String(20), default='admin') # 'superadmin' o 'admin'
+    status = db.Column(db.String(20), default='pendiene') # 'activo' o 'pendiente'
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class ActivityLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    action = db.Column(db.String(100))
+    details = db.Column(db.String(255))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    user = db.relationship('User', backref=db.backref('logs', lazy=True))
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+# --- CONFIGURACIÓN DE RUTAS Y LIMITADORES ---
 
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["1000 per hour"],
+    default_limits=["2000 per hour"],
     storage_uri="memory://"
 )
 
 BASE_DIR = Path(__file__).resolve().parent
 UPLOAD_FOLDER = BASE_DIR / 'uploads'
 OUTPUT_FOLDER = BASE_DIR / 'outputs'
-PIN_DATE_FILE = BASE_DIR / '.last_run'
-PIN_CHECK_DAYS = 7
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
-def update_pin_date():
-    try:
-        with open(PIN_DATE_FILE, 'w') as f: f.write(datetime.utcnow().isoformat())
-    except Exception: pass
+# --- INICIALIZACIÓN DE DB Y USUARIOS MAESTROS ---
 
-update_pin_date()
+def init_db():
+    with app.app_context():
+        db.create_all()
+        
+        # Usuarios Maestros (Superadmins)
+        masters = {
+            'YASMINPALACIOS': '19080519',
+            'LAURACRUZ': '19080518',
+            'LUISPANIAGUA': '19080505'
+        }
+        
+        for user, pin in masters.items():
+            if not User.query.filter_by(username=user).first():
+                new_master = User(
+                    username=user,
+                    password=generate_password_hash(pin),
+                    role='superadmin',
+                    status='activo'
+                )
+                db.session.add(new_master)
+        db.session.commit()
 
-@app.before_request
-def require_login():
-    allowed_routes = ['login', 'static']
-    if request.endpoint and request.endpoint not in allowed_routes and 'logged_in' not in session:
-        return redirect(url_for('login'))
+init_db()
+
+# --- FUNCIONES AUXILIARES ---
+
+def log_activity(action, details):
+    if current_user.is_authenticated:
+        log = ActivityLog(user_id=current_user.id, action=action, details=details)
+        db.session.add(log)
+        db.session.commit()
+
+# --- RUTAS DE AUTENTICACIÓN ---
 
 @app.route('/login', methods=['GET', 'POST'])
-@limiter.limit("5 per minute")
+@limiter.limit("10 per minute")
 def login():
     if request.method == 'POST':
-        if request.form.get('pin') == PIN_SECRETO:
-            session['logged_in'] = True
+        username = request.form.get('username').upper()
+        pin = request.form.get('pin')
+        
+        user = User.query.filter_by(username=username).first()
+        if user and check_password_hash(user.password, pin):
+            if user.status != 'activo':
+                flash('Tu cuenta aún no ha sido aprobada por un administrador.', 'error')
+                return redirect(url_for('login'))
+            
+            login_user(user)
+            log_activity("Inicio de sesión", f"Usuario {username} ha entrado.")
             return redirect(url_for('index'))
         else:
-            flash('PIN incorrecto. Inténtalo de nuevo.', 'error')
-            return redirect(url_for('login'))
-    if 'logged_in' in session: return redirect(url_for('index'))
+            flash('Usuario o PIN incorrectos.', 'error')
+            
+    if current_user.is_authenticated: return redirect(url_for('index'))
     return render_template('login.html')
 
-@app.errorhandler(429)
-def ratelimit_handler(e):
-    flash("Demasiados intentos de inicio de sesión.", "error")
-    return redirect(url_for('login'))
+@app.route('/register', methods=['GET', 'POST'])
+@limiter.limit("5 per hour")
+def register():
+    if request.method == 'POST':
+        username = request.form.get('username').upper()
+        pin = request.form.get('pin')
+        
+        if User.query.filter_by(username=username).first():
+            flash('El usuario ya existe.', 'error')
+            return redirect(url_for('register'))
+            
+        new_user = User(
+            username=username,
+            password=generate_password_hash(pin),
+            role='admin', # De acuerdo a la petición: admin para herramientas
+            status='pendiente'
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        flash('Solicitud enviada correctamente. Espera aprobación.', 'success')
+        return redirect(url_for('login'))
+        
+    return render_template('register.html')
 
 @app.route('/logout')
+@login_required
 def logout():
-    session.pop('logged_in', None)
+    log_activity("Cierre de sesión", f"Usuario {current_user.username} ha salido.")
+    logout_user()
     flash('Has cerrado la sesión.', 'success')
     return redirect(url_for('login'))
 
+# --- RUTA PRINCIPAL (HERRAMIENTAS) ---
+
 @app.route('/')
+@login_required
 def index():
     active_tab = request.args.get('tab', 'conciliador') 
     return render_template('index.html', tab=active_tab)
 
+# --- RUTAS DE ADMINISTRADOR (SUPERADMIN) ---
+
+@app.route('/admin')
+@login_required
+def admin_dashboard():
+    if current_user.role != 'superadmin':
+        abort(403)
+    
+    users = User.query.all()
+    logs = ActivityLog.query.order_by(ActivityLog.timestamp.desc()).limit(50).all()
+    return render_template('admin_dashboard.html', users=users, logs=logs)
+
+@app.route('/admin/approve/<int:user_id>')
+@login_required
+def approve_user(user_id):
+    if current_user.role != 'superadmin': abort(403)
+    user = User.query.get_or_404(user_id)
+    user.status = 'activo'
+    db.session.commit()
+    log_activity("Aprobación de usuario", f"Superadmin aprobó a {user.username}")
+    flash(f"Usuario {user.username} aprobado.", "success")
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/reject/<int:user_id>')
+@login_required
+def reject_user(user_id):
+    if current_user.role != 'superadmin': abort(403)
+    user = User.query.get_or_404(user_id)
+    # No borramos, solo marcamos o eliminamos si se prefiere
+    db.session.delete(user)
+    db.session.commit()
+    log_activity("Rechazo de usuario", f"Superadmin eliminó a {user.username}")
+    flash(f"Usuario {user.username} eliminado.", "error")
+    return redirect(url_for('admin_dashboard'))
+
+# --- PROCESAMIENTO ---
+
 @app.route('/procesar', methods=['POST'])
-@limiter.limit("1 per 10 second")
+@login_required
+@limiter.limit("5 per minute")
 def procesar_archivo():
     if 'archivo_cfdi' not in request.files or 'archivo_aux' not in request.files or 'archivo_pdf' not in request.files:
         flash("Faltan archivos por subir.", "error")
@@ -111,7 +238,8 @@ def procesar_archivo():
         with zipfile.ZipFile(pdf_zip_path, 'r') as zip_ref:
             zip_ref.extractall(pdf_extract_dir)
 
-        # MANDAMOS LLAMAR AL NUEVO MÓDULO DE CONCILIACIÓN
+        log_activity("Conciliación", f"Procesando {file_cfdi.filename} y {file_aux.filename}")
+
         success, dashboard_data, resumen_ia = ejecutar_conciliacion(str(cfdi_input_path), str(aux_input_path), str(excel_output_path), str(pdf_extract_dir), str(entregables_dir))
         
         if success:
@@ -127,7 +255,8 @@ def procesar_archivo():
         shutil.rmtree(temp_dir, ignore_errors=True)
 
 @app.route('/procesar_auditoria', methods=['POST'])
-@limiter.limit("1 per 10 second")
+@login_required
+@limiter.limit("5 per minute")
 def procesar_auditoria_ruta():
     if 'archivo_excel' not in request.files or 'archivo_pdf' not in request.files:
         flash("Faltan archivos por subir en el módulo Auditoría.", "error")
@@ -158,7 +287,8 @@ def procesar_auditoria_ruta():
         with zipfile.ZipFile(pdf_zip_path, 'r') as zip_ref:
             zip_ref.extractall(pdf_extract_dir)
 
-        # MANDAMOS LLAMAR AL NUEVO MÓDULO DE AUDITORÍA
+        log_activity("Auditoría", f"Procesando {file_excel.filename} para GSM")
+
         success, mensaje = ejecutar_auditoria(str(excel_input_path), str(pdf_extract_dir), str(entregables_dir))
         
         if success:
@@ -174,10 +304,12 @@ def procesar_auditoria_ruta():
         shutil.rmtree(temp_dir, ignore_errors=True)
 
 @app.route('/descargar/<path:nombre_archivo>')
+@login_required
 def descargar_archivo(nombre_archivo):
     safe_path = Path(OUTPUT_FOLDER).resolve()
     file_path = (safe_path / nombre_archivo).resolve()
     if not str(file_path).startswith(str(safe_path)) or not os.path.exists(file_path): abort(404)
+    log_activity("Descarga", f"Descargando archivo {nombre_archivo}")
     return make_response(send_file(file_path, as_attachment=True))
 
 @app.after_request
