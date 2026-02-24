@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido | Paniagua Palacios</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg: #f8fafc;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at bottom right, #e0e7ff, #f8fafc);
+            color: #1e293b;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #4f46e5, #9333ea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            font-size: 1.125rem;
+            color: #64748b;
+            margin-bottom: 3rem;
+            max-width: 600px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .menu-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 24px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .menu-card h2 {
+            margin: 0 0 0.75rem 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .menu-card p {
+            margin: 0;
+            color: #64748b;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .logout-btn {
+            margin-top: 4rem;
+            color: #ef4444;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo">Paniagua Palacios</div>
+        <div class="user-name">Hola, {{ current_user.username }}</div>
+    </nav>
+
+    <div class="container">
+        <h1>Bienvenido a tu Suite</h1>
+        <p class="subtitle">Selecciona la herramienta que deseas utilizar el día de hoy para comenzar tu proceso
+            contable o de auditoría.</p>
+
+        <div class="menu-grid">
+            <a href="/herramientas?tab=conciliador" class="menu-card">
+                <div class="icon">🤖</div>
+                <h2>Conciliador IA</h2>
+                <p>Cruce inteligente entre CFDI y Auxiliares Contables con detección de pases automáticos.</p>
+            </a>
+
+            <a href="/herramientas?tab=auditoria" class="menu-card">
+                <div class="icon">📑</div>
+                <h2>Auditoría GSM</h2>
+                <p>Procesamiento masivo de estados de cuenta PDF con subrayado y reporte de auditoría.</p>
+            </a>
+
+            {% if current_user.role == 'superadmin' %}
+            <a href="/admin" class="menu-card" style="grid-column: span 1 / -1;">
+                <div class="icon">⚙️</div>
+                <h2>Panel Administrativo</h2>
+                <p>Configuración de usuarios, aprobación de accesos y monitoreo de actividad en tiempo real.</p>
+            </a>
+            {% endif %}
+        </div>
+
+        <a href="/logout" class="logout-btn">Cerrar Sesión de forma segura</a>
+    </div>
+
+</body>
+
+</html>

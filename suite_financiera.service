@@ -1,0 +1,13 @@
+[Unit]
+Description=Gunicorn instance to serve Suite Financiera
+After=network.target
+
+[Service]
+User=luispaniagua
+Group=www-data
+WorkingDirectory=/home/luispaniagua/trabajo-despacho
+Environment="PATH=/home/luispaniagua/trabajo-despacho/venv/bin"
+ExecStart=/home/luispaniagua/trabajo-despacho/venv/bin/gunicorn --workers 3 --bind unix:/tmp/suite_financiera.sock -m 007 app:app
+
+[Install]
+WantedBy=multi-user.target

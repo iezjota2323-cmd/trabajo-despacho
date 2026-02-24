@@ -158,9 +158,20 @@ def logout():
     flash('Has cerrado la sesión.', 'success')
     return redirect(url_for('login'))
 
-# --- RUTA PRINCIPAL (HERRAMIENTAS) ---
+# --- RUTA PRINCIPAL (MENÚ DE BIENVENIDA) ---
 
 @app.route('/')
+@login_required
+def root():
+    return redirect(url_for('home'))
+
+@app.route('/home')
+@login_required
+def home():
+    log_activity("Home", f"Usuario {current_user.username} en el menú principal.")
+    return render_template('home.html')
+
+@app.route('/herramientas')
 @login_required
 def index():
     active_tab = request.args.get('tab', 'conciliador') 
