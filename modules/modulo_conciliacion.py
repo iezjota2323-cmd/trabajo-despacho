@@ -93,3 +93,9 @@ def ejecutar_conciliacion(cfdi_path, aux_path, output_path, *args, **kwargs):
         resumen = f"Se encontraron {len(merged)} coincidencias entre los montos de tu auxiliar y el IVA de las facturas."
         return True, dashboard, resumen
     except Exception as e: return False, [], str(e)
+
+def generar_resumen_ia(df_final, *args, **kwargs):
+    """Función placeholder para mantener compatibilidad con app.py"""
+    if df_final is None or (isinstance(df_final, pd.DataFrame) and df_final.empty):
+        return "No se encontraron coincidencias suficientes para generar un análisis."
+    return f"Análisis completado: Se procesaron {len(df_final)} registros con éxito."
